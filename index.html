@@ -147,20 +147,28 @@
 <form id="frm" action="" method="get">
                    <div>
                         <div class="form-group">
-                           <fieldset>
-	      <input class="btn btn-primary" id = "now_date" type="date" name="userdate" min="2019-02-01" max="2020-02-01">
-              <input class="btn btn-primary" type="submit" value="검색"  onclick="return false"></div>
+                      <fieldset>
+                                <input class="btn btn-primary" id="now_date" type="date" name="userdate" min="2019-02-01" max="2020-02-01">
+
+                                <input class="btn btn-primary" id="now_time" type="time" name="usertime" step="300">
+
+                                <input class="btn btn-primary" type="submit" value="검색">
+                        </div>
+
+ <script>
+
+          document.getElementById('now_date').value = "{{date}}"
+          document.getElementById('now_time').value = "{{time}}"
+
+                            </script>
                            </fieldset>
 
   <div class="tbl-header">
     <table cellpadding="0" cellspacing="0" border="0">
       <thead>
         <tr>
-          <th>Code</th>
-          <th>Company</th>
-          <th>Price</th>
-          <th>Change</th>
-          <th>Change %</th>
+          <th>순위</th>
+          <th>키워드</th>
         </tr>
       </thead>
     </table>
@@ -168,20 +176,19 @@
   <div class="tbl-content">
     <table cellpadding="0" cellspacing="0" border="0">
       <tbody>
+  <script>
+  var number = 1;
+  </script>
+          {% for post in posts %}
         <tr>
-          <td>AAC</td>
-          <td>AUSTRALIAN COMPANY </td>
-          <td>$1.38</td>
-          <td>+2.01</td>
-          <td>-0.36%</td>
+          <td><script>document.write(number);</script></td>
+          <td>{{post}}</td>
+  <script>
+  var number = ++number ;
+  </script>
         </tr>
-        <tr>
-          <td>AAD</td>
-          <td>AUSENCO</td>
-          <td>$2.38</td>
-          <td>-0.01</td>
-          <td>-1.36%</td>
-        </tr>
+          {% endfor %}
+
       </tbody>
     </table>
   </div>
