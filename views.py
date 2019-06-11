@@ -757,3 +757,58 @@ def input(request):
 
 #urls.py에 의해 들어온 사용자의 요청에 realtime.html템플릿을 실시간 검색 순위가 담긴 posts 변수와 알맞은 형태로 만든 날짜, 시간 변수와 함께 보내준다.
         return render(request, 'crawling/index.html', {'posts' : posts, 'date': convert_date,'time':convert_time})
+
+#--------------------------------------test---------------------------------------
+
+#index라는 메소드를 선언
+def test(request):
+
+#realtime.html에서 get방식을 통해 입력된 값을 불러오는 부분
+    userdate = request.GET.get("userdate")
+    usertime = request.GET.get("usertime")
+
+#가져온 데이터를 스코어 파라미터에 맞는 형태로 수정하는 작업
+#날짜와 시간 데이터 입력이 있는경우
+    if userdate and usertime :
+#날짜 데이터 XXXX-XX-XX형태를 XXXXXXXX폼으로 수정
+        split_Date = userdate.split('-')
+        split_Time = usertime.split(':') 
+#시간 데이터 XX:XX형태를 XXXX폼으로 수정
+        input_Date = "".join(split_Date)
+        input_Time = "".join(split_Time)
+
+#2019-02-00~2020-02-00으로 날짜 범위를 정해준다. 
+#아래 날짜를 수정하여 원하는 범위를 지정해줄 수 있다.
+        if int(input_Date) >= 20190200 and int(input_Date) <= 20200200:
+
+#로컬 타임존을 utc타임존으로 수정하는 부분
+#구한 날짜와 시간을 합쳐 datatime형식으로 만들고 9시간만큼 뺀 시간을 구한다.
+            now = userdate + " " + usertime + ":00"
+            now = datetime.datetime.strptime(now, '%Y-%m-%d %H:%M:%S')  
+            now = now - timedelta(hours=9)
+
+#수정된 시간대에서 날짜와 시간을 추출한다.
+            nowDate = now.strftime('%Y%m%d')
+            nowTime = now.strftime('%H%M')
+          
+            params = {
+                "_Call_date": nowDate,
+                "_Call_time": nowTime,
+                "_Call_div": "NAVER"
+            }
+
+            Inquiry = CallBuilder() \
+                .from_(_keystore_address) \
+                .to(_score_address) \
+                .method("inquiry_RT") \
+                .params(params) \
+                .build()
+            response = icon_service.call(Inquiry)
+
+#가져온 데이터를 posts라는 변수에 담는다.
+            posts = json.loads(response)
+
+#urls.py에 의해 들어온 사용자의 요청에 realtime.html템플릿을 실시간 검색 순위가 담긴 posts 변수와 날짜 값이 담긴 date, 시간 값이 담긴 time변수와 함께 보내준다.
+#            return render(request, 'crawling/test.html', {'posts': posts, 'date': userdate, 'time': usertime})
+#            return JsonResponse(posts)
+            return HttpResponse(json.dumps(posts), "application/json")

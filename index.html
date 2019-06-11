@@ -143,25 +143,20 @@
   <!--for demo wrap-->
   <h1 id="h123">Fixed Table header</h1>
 
+<form name="frm" id="frm">
+<div>
+<div class="form-group">
+<fieldset>
+<input class="btn btn-primary" id="now_date" type="date" name="userdate" min="2019-02-01" max="2020-02-01">
+<input class="btn btn-primary" id="now_time" type="time" name="usertime" step="300">
+<input class="btn btn-primary" type="button" value="검색" onclick="formSubmit()">
+</div>
 
-<form id="frm" action="" method="get">
-                   <div>
-                        <div class="form-group">
-                      <fieldset>
-                                <input class="btn btn-primary" id="now_date" type="date" name="userdate" min="2019-02-01" max="2020-02-01">
-
-                                <input class="btn btn-primary" id="now_time" type="time" name="usertime" step="300">
-
-                                <input class="btn btn-primary" type="submit" value="검색">
-                        </div>
-
- <script>
-
-          document.getElementById('now_date').value = "{{date}}"
-          document.getElementById('now_time').value = "{{time}}"
-
-                            </script>
-                           </fieldset>
+<script>
+document.getElementById('now_date').value = "{{date}}"
+document.getElementById('now_time').value = "{{time}}"
+</script>
+</fieldset>
 
   <div class="tbl-header">
     <table cellpadding="0" cellspacing="0" border="0">
@@ -174,9 +169,9 @@
     </table>
   </div>
   <div class="tbl-content">
-    <table cellpadding="0" cellspacing="0" border="0">
+    <table class='test_table' cellpadding="0" cellspacing="0" border="0">
       <tbody>
-  <script>
+<script>
   var number = 1;
   </script>
           {% for post in posts %}
@@ -189,29 +184,39 @@
         </tr>
           {% endfor %}
 
+<script>
+function formSubmit() {
+    var params = jQuery("#frm").serialize();
+    jQuery.ajax({
+        url: 'test/',
+        type: 'GET',
+        data:params,
+        dataType: 'json',
+	error: function(xhr, status, error){
+            alert("데이터가 없거나 잘못된 날자값을 입력하셨습니다.");
+
+},
+        success: function(result) {
+            if (result){
+var html;
+$('.test_table').empty();
+for(var i=0; i<result.length; i++){
+html += "<tr><td>";
+html += i+1;
+html += "</td><td>";
+html += result[i];
+html += "</td></tr>"
+}
+$('.test_table').append(html);
+            }
+        }
+    });
+}
+</script>
+
       </tbody>
     </table>
   </div>
-
-                        
-<ol class= "rolldown-list" >
-    <script>
-        var a = "{{date}}"
-        b = a.length
-    if( b > 5 ) {
-        var today = moment().format('{{date}}')
-        document.getElementById('now_date').value = today
-    } else {
-        document.getElementById('now_date').valueAsDate = new Date();
-    }
-    </script>
-
-	 {% for post in posts %}
-    <li style="text-align:left">{{post.G_Word}}</li>
-	 {% endfor %}
-
-</ol>
-
                </div>
 		  </div>
 </form>
